@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
+import prisma from '../lib/prisma.js';
 
 // CREATE
 export const AddEvent = async (req, res) => {
@@ -57,10 +58,12 @@ export const GetAllEvents = async (req, res) => {
    const page = parseInt(req.query.page) || 0;
    const limit = parseInt(req.query.limit) || 10;
    const search = req.query.search_query || "";
+   const status = req.query.status || "";
    const offset = limit * page;
 
    const totalRows = await prisma.event.count({
       where: {
+         ...(status && { status }),
          OR: [
             {
                name: {
@@ -75,6 +78,7 @@ export const GetAllEvents = async (req, res) => {
 
    const result = await prisma.event.findMany({
       where: {
+         ...(status && { status }),
          OR: [
             {
                name: {

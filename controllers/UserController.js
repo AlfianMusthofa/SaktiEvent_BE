@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt'
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
+import prisma from "../lib/prisma.js";
+import jwt from 'jsonwebtoken'
 
 // CREATE
 export const AddUser = async (req, res) => {
@@ -137,3 +139,19 @@ export const GetUserById = async (req, res) => {
       res.status(500).json({ msg: error.message })
    }
 }
+
+export const getUser = (req, res) => {
+   const token = req.cookies.token; // Ambil token dari cookie
+   if (!token) return res.status(401).json({ msg: "Unauthorized" });
+
+   jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+      if (err) return res.status(403).json({ msg: "Forbidden" });
+
+      res.json({
+         id: decoded.id,
+         username: decoded.username,
+         email: decoded.email,
+         phone: decoded.phone
+      });
+   });
+};

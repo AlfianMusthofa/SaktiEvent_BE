@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 import path from 'path'
 import fs from 'fs'
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
+import prisma from '../lib/prisma.js'
+
 
 // CREATE
 export const AddReport = async (req, res) => {
