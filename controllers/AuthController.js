@@ -6,15 +6,15 @@ const prisma = new PrismaClient();
 
 export const login = async (req, res) => {
 
-   const { name, password } = req.body;
+   const { username, password } = req.body;
    try {
       const user = await prisma.user.findFirst({
          where: {
-            name: name
+            name: username
          }
       })
 
-      if (!user) return res.status(404).json({ msg: "User not found!" })
+      if (!user) return res.status(400).json({ msg: "Username or Password is invalid!" })
       const matchedPassword = await bcrypt.compare(password, user.password)
 
       if (!matchedPassword) return res.status(400).json({ msg: "Username or Password is invalid!" })

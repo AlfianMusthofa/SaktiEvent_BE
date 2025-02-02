@@ -106,7 +106,49 @@ export const GetReportById = async (req, res) => {
 export const UpdateReport = async (req, res) => {
 
    const { id } = req.params;
-   const { title, body, image, author } = req.body;
+   const { title, body, author } = req.body;
+
+   const report = await prisma.report.findFirst({
+      where: {
+         id: Number(id)
+      }
+   })
+
+   if (!report) return res.status(404).json({ msg: 'Report not found!' })
+
+   let fileName = report.image;
+
+   if (req.files && req.files.file) {
+
+      const file = req.files.file;
+      const fileSize = file.data.length;
+      const ext = path.extname(file.name);
+      const newFileName = file.md5 + ext;
+
+      const allowedType = ['.png', '.jpg', '.jpeg'];
+
+      if (!allowedType.includes(ext.toLowerCase())) {
+         return res.status(422).json({ msg: 'Invalid image format!' });
+      }
+      if (fileSize > 5000000) {
+         return res.status(422).json({ msg: 'Image is too large!' });
+      }
+
+      if (report.image) {
+         const oldImagePath = `./public/images/${report.image}`;
+         if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+         }
+      }
+
+      file.mv(`./public/images/${newFileName}`, (err) => {
+         if (err) return res.status(500).json({ msg: err.message });
+      });
+
+      fileName = newFileName;
+   }
+
+   const url = `${req.protocol}://${req.get("host")}/images/${fileName}`
 
    try {
       const response = await prisma.report.update({
@@ -114,7 +156,8 @@ export const UpdateReport = async (req, res) => {
             title: title,
             body: body,
             author: author,
-            image: image
+            image: fileName,
+            url: url
          }, where: {
             id: Number(id)
          }

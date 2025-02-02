@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt'
-// const prisma = new PrismaClient();
 import prisma from "../lib/prisma.js";
 import jwt from 'jsonwebtoken'
 
@@ -125,7 +124,7 @@ export const DeleteUser = async (req, res) => {
    }
 }
 
-// GET USER BY
+// GET USER BY ID
 export const GetUserById = async (req, res) => {
    const { id } = req.params.id;
    try {
@@ -140,6 +139,7 @@ export const GetUserById = async (req, res) => {
    }
 }
 
+// Get Current User
 export const getUser = (req, res) => {
    const token = req.cookies.token; // Ambil token dari cookie
    if (!token) return res.status(401).json({ msg: "Unauthorized" });

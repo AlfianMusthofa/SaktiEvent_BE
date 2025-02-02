@@ -7,6 +7,7 @@ import fileUpload from 'express-fileupload'
 import dotenv from 'dotenv'
 import AuthRoute from './routers/AuthRoute.js'
 import cookieParser from 'cookie-parser'
+import HistoryRoute from './routers/HistoryRoute.js'
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ app.use(UserRoute)
 app.use(ReportRoute)
 app.use(EventRoute)
 app.use(AuthRoute)
+app.use(HistoryRoute)
 
 app.listen(3000, () => console.log("OK..."))
