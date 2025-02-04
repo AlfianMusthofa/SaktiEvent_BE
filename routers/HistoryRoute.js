@@ -4,6 +4,6 @@ import express from 'express';
 const router = express.Router();
 
 router.get('/api/v1/history', AuthMiddleware, getAllHistory);
-router.get('/api/v1/history/user/:id', AuthMiddleware, getHistoryByUser)
+router.get('/api/v1/history/user/:userId', AuthMiddleware, getHistoryByUser)
 
 export default router;

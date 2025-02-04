@@ -346,25 +346,27 @@ export const GetEventById = async (req, res) => {
 export const AddUserToEvent = async (req, res) => {
    const { userId, eventId } = req.params;
 
+   const userIdNum = Number(userId);
+   const eventIdNum = Number(eventId);
+
    try {
       // Pastikan user dan event ada
       const isUserExist = await prisma.user.findUnique({
-         where: { id: Number(userId) }
+         where: { id: userIdNum }
       });
 
       const isEventExist = await prisma.event.findUnique({
-         where: { id: Number(eventId) }
+         where: { id: eventIdNum }
       });
 
       if (!isUserExist || !isEventExist) {
          return res.status(404).json({ msg: "User or Event not found!" });
       }
 
-      // Cek apakah user sudah terdaftar dalam event tertentu
       const existingEntry = await prisma.eventUser.findFirst({
          where: {
-            userId: Number(userId),
-            eventId: Number(eventId) // <- Cek berdasarkan kombinasi user & event
+            userId: userIdNum,
+            eventId: eventIdNum
          }
       });
 
@@ -372,21 +374,21 @@ export const AddUserToEvent = async (req, res) => {
          return res.status(400).json({ msg: "User already registered for this event" });
       }
 
-      // Jika belum, daftar user ke event
       const newEventUser = await prisma.eventUser.create({
          data: {
-            userId: Number(userId),
-            eventId: Number(eventId)
+            userId: userIdNum,
+            eventId: eventIdNum
          }
       });
 
-      // Tambahkan ke history
-      await prisma.history.create({
+      const responseHistoryUser = await prisma.history.create({
          data: {
-            userId: Number(userId),
-            eventId: Number(eventId)
+            userId: userIdNum,
+            eventId: eventIdNum
          }
       });
+
+      if (!newEventUser || !responseHistoryUser) return res.status(400).json({ msg: "Something wrong with with AddEventUser or Response history user" })
 
       return res.status(201).json({
          msg: "Register success",
