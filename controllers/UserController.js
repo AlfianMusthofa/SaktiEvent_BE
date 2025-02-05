@@ -19,7 +19,7 @@ export const AddUser = async (req, res) => {
             phone: phone
          }
       })
-      res.status(200).json({ msg: "User has been created!", response })
+      res.status(201).json({ msg: "User has been created!", response })
    } catch (error) {
       res.status(500).json({ msg: error.message })
    }

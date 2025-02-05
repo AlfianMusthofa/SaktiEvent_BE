@@ -111,7 +111,7 @@ export const GetAllEvents = async (req, res) => {
    const page = parseInt(req.query.page) || 0;
    const limit = parseInt(req.query.limit) || 10;
    const search = req.query.search_query || "";
-   const status = req.query.status || "Active";
+   const status = req.query.status || "";
    const offset = limit * page;
 
    const totalRows = await prisma.event.count({
@@ -416,5 +416,17 @@ export const checkUserRegistrationEvent = async (req, res) => {
       res.status(200).json({ msg: 'Registered', existingEntry });
    } catch (error) {
       res.status(500).json({ msg: error.message });
+   }
+}
+
+export const countAllParticipans = async (req, res) => {
+   try {
+      const response = await prisma.eventUser.groupBy({
+         by: ['userId']
+      })
+      if (!response) return res.status(404).json({ msg: "Not found!" })
+      res.status(200).json(response.length);
+   } catch (error) {
+      console.log(error)
    }
 }
